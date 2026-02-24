@@ -1,0 +1,103 @@
+-- ===============================
+-- BAZA DANYCH: komputery
+-- ===============================
+
+DROP DATABASE IF EXISTS komputery;
+CREATE DATABASE komputery CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci;
+USE komputery;
+
+-- ===============================
+-- TABELA: komputery
+-- ===============================
+CREATE TABLE komputery (
+    id_komputera INT AUTO_INCREMENT PRIMARY KEY,
+    nazwa VARCHAR(100) NOT NULL,
+    producent VARCHAR(50) NOT NULL
+);
+
+-- ===============================
+-- TABELA: podzespoly
+-- ===============================
+CREATE TABLE podzespoly (
+    id_podzespolu INT AUTO_INCREMENT PRIMARY KEY,
+    nazwa VARCHAR(100) NOT NULL,
+    typ VARCHAR(50) NOT NULL,          -- Procesor, RAM, Płyta główna
+    producent VARCHAR(50) NOT NULL
+);
+
+-- ===============================
+-- TABELA: kompatybilnosc
+-- ===============================
+CREATE TABLE kompatybilnosc (
+    id_komputera INT NOT NULL,
+    id_podzespolu INT NOT NULL,
+    PRIMARY KEY (id_komputera, id_podzespolu),
+    FOREIGN KEY (id_komputera) REFERENCES komputery(id_komputera)
+        ON DELETE CASCADE,
+    FOREIGN KEY (id_podzespolu) REFERENCES podzespoly(id_podzespolu)
+        ON DELETE CASCADE
+);
+
+-- ===============================
+-- DANE PRZYKŁADOWE
+-- ===============================
+
+INSERT INTO komputery (nazwa, producent) VALUES
+('BiuroPC', 'Dell'),
+('GamingPro', 'HP'),
+('EdukacjaBox', 'Lenovo');
+
+INSERT INTO podzespoly (nazwa, typ, producent) VALUES
+('Intel Core i5-12400', 'Procesor', 'Intel'),
+('AMD Ryzen 5 5600', 'Procesor', 'AMD'),
+('ASUS B550', 'Płyta główna', 'ASUS'),
+('MSI B660', 'Płyta główna', 'MSI'),
+('Kingston Fury 16GB', 'RAM', 'Kingston'),
+('Corsair Vengeance 32GB', 'RAM', 'Corsair');
+
+INSERT INTO kompatybilnosc VALUES
+(1, 1),
+(1, 5),
+(2, 2),
+(2, 4),
+(2, 6),
+(3, 1),
+(3, 3),
+(3, 5);
+
+-- ===============================
+-- ZAPYTANIA Z JOIN
+-- ===============================
+
+-- 1. Lista komputerów i kompatybilnych podzespołów
+SELECT k.nazwa AS komputer, p.nazwa AS podzespol, p.typ
+FROM kompatybilnosc kp
+JOIN komputery k ON kp.id_komputera = k.id_komputera
+JOIN podzespoly p ON kp.id_podzespolu = p.id_podzespolu;
+
+-- 2. Podzespoły kompatybilne z komputerem "GamingPro"
+SELECT p.nazwa, p.typ
+FROM kompatybilnosc kp
+JOIN komputery k ON kp.id_komputera = k.id_komputera
+JOIN podzespoly p ON kp.id_podzespolu = p.id_podzespolu
+WHERE k.nazwa = 'GamingPro';
+
+-- 3. Komputery obsługujące procesory
+SELECT DISTINCT k.nazwa
+FROM kompatybilnosc kp
+JOIN komputery k ON kp.id_komputera = k.id_komputera
+JOIN podzespoly p ON kp.id_podzespolu = p.id_podzespolu
+WHERE p.typ = 'Procesor';
+
+-- 4. Komputery i producenci ich podzespołów
+SELECT k.nazwa AS komputer, p.producent AS producent_podzespolu
+FROM kompatybilnosc kp
+JOIN komputery k ON kp.id_komputera = k.id_komputera
+JOIN podzespoly p ON kp.id_podzespolu = p.id_podzespolu;
+
+-- 5. Liczba kompatybilnych podzespołów dla każdego komputera
+SELECT k.nazwa, COUNT(p.id_podzespolu) AS liczba_podzespolow
+FROM kompatybilnosc kp
+JOIN komputery k ON kp.id_komputera = k.id_komputera
+JOIN podzespoly p ON kp.id_podzespolu = p.id_podzespolu
+GROUP BY k.nazwa;
