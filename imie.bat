@@ -9,7 +9,8 @@ echo Podane imie i nazwisko to %imie% %nazwisko%
 pause
 cls
 echo Teraz zapisze dane do pliku 
-echo Imie i nazwisko to: %imie% %nazwisko% > dane.txt
+echo Imie i nazwisko to: %imie% %nazwisko% > %imie%_%nazwisko%.txt
+echo Ulica i nr domu to: %imie% %nazwisko% >> %imie%_%nazwisko%.txt
 cls
 pause
 echo Zaraz zakoncze program
