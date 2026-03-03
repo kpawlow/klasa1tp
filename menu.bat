@@ -1,5 +1,5 @@
 @echo off
-echo ---=== Super program ===---~☻♥
+echo ---=== Super program ===---
 :haslo
 cls
 echo Podaj haslo
@@ -31,4 +31,5 @@ goto koniec
 cls
 echo Wlasnie konczy sie program
 pause
+
 exit
